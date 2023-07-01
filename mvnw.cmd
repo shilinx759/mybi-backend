@@ -54,7 +54,7 @@ if exist "%USERPROFILE%\mavenrc_pre.cmd" call "%USERPROFILE%\mavenrc_pre.cmd" %*
 
 set ERROR_CODE=0
 
-@REM To isolate internal variables from possible post scripts, we use another setlocal
+@REM To isolate internal variables from possible chart scripts, we use another setlocal
 @setlocal
 
 @REM ==== START VALIDATION ====
@@ -174,11 +174,11 @@ set ERROR_CODE=1
 :end
 @endlocal & set ERROR_CODE=%ERROR_CODE%
 
-if not "%MAVEN_SKIP_RC%"=="" goto skipRcPost
-@REM check for post script, once with legacy .bat ending and once with .cmd ending
-if exist "%USERPROFILE%\mavenrc_post.bat" call "%USERPROFILE%\mavenrc_post.bat"
-if exist "%USERPROFILE%\mavenrc_post.cmd" call "%USERPROFILE%\mavenrc_post.cmd"
-:skipRcPost
+if not "%MAVEN_SKIP_RC%"=="" goto skipRcchart
+@REM check for chart script, once with legacy .bat ending and once with .cmd ending
+if exist "%USERPROFILE%\mavenrc_chart.bat" call "%USERPROFILE%\mavenrc_chart.bat"
+if exist "%USERPROFILE%\mavenrc_chart.cmd" call "%USERPROFILE%\mavenrc_chart.cmd"
+:skipRcchart
 
 @REM pause the script if MAVEN_BATCH_PAUSE is set to 'on'
 if "%MAVEN_BATCH_PAUSE%"=="on" pause

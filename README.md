@@ -144,12 +144,12 @@ spring:
     password: 123456
 ```
 
-2）复制 `sql/post_es_mapping.json` 文件中的内容，通过调用 Elasticsearch 的接口或者 Kibana Dev Tools 来创建索引（相当于数据库建表）
+2）复制 `sql/chart_es_mapping.json` 文件中的内容，通过调用 Elasticsearch 的接口或者 Kibana Dev Tools 来创建索引（相当于数据库建表）
 
 ```
-PUT post_v1
+PUT chart_v1
 {
- 参数见 sql/post_es_mapping.json 文件
+ 参数见 sql/chart_es_mapping.json 文件
 }
 ```
 
@@ -157,7 +157,7 @@ PUT post_v1
 
 3）开启同步任务，将数据库的帖子同步到 Elasticsearch
 
-找到 job 目录下的 `FullSyncPostToEs` 和 `IncSyncPostToEs` 文件，取消掉 `@Component` 注解的注释，再次执行程序即可触发同步：
+找到 job 目录下的 `FullSyncchartToEs` 和 `IncSyncchartToEs` 文件，取消掉 `@Component` 注解的注释，再次执行程序即可触发同步：
 
 ```java
 // todo 取消注释开启任务
