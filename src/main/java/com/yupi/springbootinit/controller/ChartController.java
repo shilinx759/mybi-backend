@@ -1,4 +1,5 @@
 package com.yupi.springbootinit.controller;
+import java.util.Date;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,14 +15,17 @@ import com.yupi.springbootinit.constant.FileConstant;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
+import com.yupi.springbootinit.manager.AiManager;
 import com.yupi.springbootinit.model.dto.chart.*;
 import com.yupi.springbootinit.model.entity.Chart;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.enums.FileUploadBizEnum;
+import com.yupi.springbootinit.model.vo.BiResponse;
 import com.yupi.springbootinit.service.ChartService;
 import com.yupi.springbootinit.service.UserService;
 import com.yupi.springbootinit.utils.ExcelUtils;
 import com.yupi.springbootinit.utils.SqlUtils;
+import com.yupi.yucongming.dev.model.DevChatRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -53,6 +57,11 @@ public class ChartController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private AiManager aiManager;
+
+
 
 //    private
 
@@ -233,7 +242,7 @@ public class ChartController {
      * @return
      */
     @PostMapping("/gen")
-    public BaseResponse<String> genChartByAi(@RequestPart("file") MultipartFile multipartFile,
+    public BaseResponse<BiResponse> genChartByAi(@RequestPart("file") MultipartFile multipartFile,
                                              GenChartByAiRequest genChartByAi, HttpServletRequest request) {
         String name = genChartByAi.getName();
         String goal = genChartByAi.getGoal();
@@ -261,8 +270,104 @@ public class ChartController {
         //限流判斷，每個用戶一個限流器
 
         //excel 測試
-        String result = ExcelUtils.excelToCsv(multipartFile);
-        return ResultUtils.success(result);
+        String csvData = ExcelUtils.excelToCsv(multipartFile);
+//        return ResultUtils.success(result);
+
+
+
+        //定义模型id 即 BI模型
+        long modelId = 1659171950288818178L;
+        //构造用户输入
+        /**
+         * 分析需求:
+         * 分析网站的用户增长趋势
+         * 原始数据:
+         * 日期,用户数
+         * 1日,10
+         * 2日,20
+         * 3日,30
+         */
+        StringBuilder userInput = new StringBuilder();
+        userInput.append("分析需求:").append("\n");
+        //指定图表类型
+        String userGoal = goal;
+        //如果用户指定了图表类型，那么需要修改一下需求
+        if (StringUtils.isNotBlank(chartType)) {
+           userGoal += ",请使用" + chartType;
+        }
+
+
+        userInput.append(userGoal).append("\n");
+        userInput.append("原始数据:").append("\n");
+        userInput.append(csvData);
+        //得到ai的回复长这这样：
+        /**
+         * 【【【【【
+         * {
+         *   "title": {
+         *     "text": "用户增长趋势",
+         *     "subtext": "数据来源: 网站统计",
+         *     "left": "center"
+         *   },
+         *   "tooltip": {},
+         *   "xAxis": {
+         *     "type": "category",
+         *     "data": ["1日", "2日", "3日"]
+         *   },
+         *   "yAxis": {
+         *     "type": "value"
+         *   },
+         *   "series": [{
+         *     "name": "用户数",
+         *     "type": "line",
+         *     "data": [10, 20, 30]
+         *   }]
+         * }
+         * 【【【【【
+         * 根据提供的原始数据，可以看出网站的用户增长趋势如下：
+         * - 1日的用户数为10
+         * - 2日的用户数为20
+         * - 3日的用户数为30
+         * 从数据图表中可以观察到，用户数在这三天内呈现逐渐增长的趋势，说明网站吸引了更多的用户。
+         *
+         * Process finished with exit code 0
+         */
+        String aiResult = aiManager.doChat(modelId, userInput.toString());
+        //根据【【【分割符号来划分出我们要的代码段和分析文本
+        String[] splits = aiResult.split("【【【【【");
+        //生成成功的话会有三段
+        if (splits.length < 3) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI 生成错误");
+        }
+        //分出代码段和分析文本 第0个是空字符串
+        String genChart = splits[1].trim();
+        String genResult = splits[2].trim();
+
+        Chart chart = new Chart();
+        chart.setName(name);
+        chart.setGoal(goal);
+        chart.setChartData(csvData);
+        chart.setChartType(chartType);
+        chart.setGenChart(genChart);
+        chart.setGenResult(genResult);
+        chart.setUserId(loginUser.getId());
+
+
+        //插入数据到数据库
+        final boolean saveResult = chartService.save(chart);
+        ThrowUtils.throwIf(!saveResult,ErrorCode.SYSTEM_ERROR,"图表保存失败");
+        //设置返回类型，返回给前端
+        BiResponse biResponse = new BiResponse();
+        biResponse.setGenChart(genChart);
+        biResponse.setGenResult(genResult);
+        biResponse.setChartId(chart.getId());
+
+
+        return ResultUtils.success(biResponse);
+
+//        devChatRequest.
+        //获取分析图表
+//        aiManager.doChat(1659171950288818178L, result);
 
 //        FileUploadBizEnum fileUploadBizEnum = FileUploadBizEnum.getEnumByValue(biz);
 //        if (fileUploadBizEnum == null) {
