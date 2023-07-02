@@ -1,5 +1,6 @@
 package com.yupi.springbootinit.controller;
 
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
@@ -9,26 +10,31 @@ import com.yupi.springbootinit.common.DeleteRequest;
 import com.yupi.springbootinit.common.ErrorCode;
 import com.yupi.springbootinit.common.ResultUtils;
 import com.yupi.springbootinit.constant.CommonConstant;
+import com.yupi.springbootinit.constant.FileConstant;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
-import com.yupi.springbootinit.model.dto.chart.ChartAddRequest;
-import com.yupi.springbootinit.model.dto.chart.ChartEditRequest;
-import com.yupi.springbootinit.model.dto.chart.ChartQueryRequest;
-import com.yupi.springbootinit.model.dto.chart.ChartUpdateRequest;
+import com.yupi.springbootinit.model.dto.chart.*;
 import com.yupi.springbootinit.model.entity.Chart;
 import com.yupi.springbootinit.model.entity.User;
+import com.yupi.springbootinit.model.enums.FileUploadBizEnum;
 import com.yupi.springbootinit.service.ChartService;
 import com.yupi.springbootinit.service.UserService;
+import com.yupi.springbootinit.utils.ExcelUtils;
 import com.yupi.springbootinit.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 帖子接口
@@ -47,6 +53,8 @@ public class ChartController {
 
     @Resource
     private UserService userService;
+
+//    private
 
     private final static Gson GSON = new Gson();
 
@@ -217,6 +225,79 @@ public class ChartController {
 
 
     /**
+     * 智能分析（同步）
+     *
+     * @param multipartFile
+     * @param genChartByAi
+     * @param request
+     * @return
+     */
+    @PostMapping("/gen")
+    public BaseResponse<String> genChartByAi(@RequestPart("file") MultipartFile multipartFile,
+                                             GenChartByAiRequest genChartByAi, HttpServletRequest request) {
+        String name = genChartByAi.getName();
+        String goal = genChartByAi.getGoal();
+        String chartType = genChartByAi.getChartType();
+
+        //校驗
+        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目標為空");
+        ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名稱過長");
+
+        //校驗文件
+        long size = multipartFile.getSize();
+        String originalFilename = multipartFile.getOriginalFilename();
+
+        //校驗文件大小
+        final long ONE_MB = 1024 * 1024L;
+        ThrowUtils.throwIf(size > ONE_MB, ErrorCode.PARAMS_ERROR, "文件超過 1M");
+
+        //校驗文件後綴
+        String suffix = FileUtil.getSuffix(originalFilename);
+        final List<String> validFileSuffixList = Arrays.asList("xlsx");
+        ThrowUtils.throwIf(!validFileSuffixList.contains(suffix),ErrorCode.PARAMS_ERROR,"文件後綴非法");
+
+        User loginUser = userService.getLoginUser(request);
+
+        //限流判斷，每個用戶一個限流器
+
+        //excel 測試
+        String result = ExcelUtils.excelToCsv(multipartFile);
+        return ResultUtils.success(result);
+
+//        FileUploadBizEnum fileUploadBizEnum = FileUploadBizEnum.getEnumByValue(biz);
+//        if (fileUploadBizEnum == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        validFile(multipartFile, fileUploadBizEnum);
+//        User loginUser = userService.getLoginUser(request);
+//        // 文件目录：根据业务、用户来划分
+//        String uuid = RandomStringUtils.randomAlphanumeric(8);
+//        String filename = uuid + "-" + multipartFile.getOriginalFilename();
+//        String filepath = String.format("/%s/%s/%s", fileUploadBizEnum.getValue(), loginUser.getId(), filename);
+//        File file = null;
+//        try {
+//            // 上传文件
+//            file = File.createTempFile(filepath, null);
+//            multipartFile.transferTo(file);
+//            cosManager.putObject(filepath, file);
+//            // 返回可访问地址
+//            return ResultUtils.success(FileConstant.COS_HOST + filepath);
+//        } catch (Exception e) {
+//            log.error("file upload error, filepath = " + filepath, e);
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
+//        } finally {
+//            if (file != null) {
+//                // 删除临时文件
+//                boolean delete = file.delete();
+//                if (!delete) {
+//                    log.error("file delete error, filepath = {}", filepath);
+//                }
+//            }
+//        }
+    }
+
+
+    /**
      * 获取查询包装类
      *
      * @param chartQueryRequest
@@ -232,12 +313,15 @@ public class ChartController {
         String sortField = chartQueryRequest.getSortField();
         String sortOrder = chartQueryRequest.getSortOrder();
         Long id = chartQueryRequest.getId();
+        String name = chartQueryRequest.getName();
         String goal = chartQueryRequest.getGoal();
         String chartType = chartQueryRequest.getChartType();
         Long userId = chartQueryRequest.getUserId();
 
 
+
         queryWrapper.eq(id!=null && id > 0, "id", id);
+        queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
         queryWrapper.eq(StringUtils.isNotBlank(goal), "goal", goal);
         queryWrapper.eq(StringUtils.isNotBlank(chartType), "chartType", chartType);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
