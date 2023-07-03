@@ -1,7 +1,12 @@
 package com.yupi.springbootinit.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.Mapper;
 import com.yupi.springbootinit.model.entity.Chart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author 86181
@@ -10,7 +15,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.yupi.springbootinit.model.entity.Chart
 */
 public interface ChartMapper extends BaseMapper<Chart> {
-
+    List<Map<String, Object>> queryChartData(String querySql);
 }
 
 

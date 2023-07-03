@@ -16,6 +16,7 @@ import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
 import com.yupi.springbootinit.manager.AiManager;
+import com.yupi.springbootinit.manager.RedisLimiterManager;
 import com.yupi.springbootinit.model.dto.chart.*;
 import com.yupi.springbootinit.model.entity.Chart;
 import com.yupi.springbootinit.model.entity.User;
@@ -60,6 +61,9 @@ public class ChartController {
 
     @Resource
     private AiManager aiManager;
+
+    @Resource
+    private RedisLimiterManager redisLimiterManager;
 
 
 
@@ -267,7 +271,8 @@ public class ChartController {
 
         User loginUser = userService.getLoginUser(request);
 
-        //限流判斷，每個用戶一個限流器
+        //限流判斷，每個用戶一個限流器 方法名_用户id 作为key 作用：限制每个用户执行某个方法 XX 次
+        redisLimiterManager.doRateLimit("genChartByAi_"+loginUser.getId());
 
         //excel 測試
         String csvData = ExcelUtils.excelToCsv(multipartFile);
