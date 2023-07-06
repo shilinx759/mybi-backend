@@ -32,6 +32,12 @@ spring:
     port: 6379
     timeout: 5000
     password: 123456
+# RabbitMQ配置
+  rabbitmq:
+    port: 5672
+    password: guest
+    username: guest
+    host: localhost
   # Elasticsearch 配置
   # todo 需替换配置，然后取消注释
 #  elasticsearch:
@@ -96,5 +102,5 @@ cos:
 #鱼聪明AI配置
 yuapi:
   client:
-    access-key: hqr8wj62888epwayrkmfyuzqed5bg0pb
-    secret-key: o5s73df8sg5li4jhg5j6fjh6yerakcsd
+    access-key: inq1qlktc892ikvq7kl67vodc6qvurdi
+    secret-key: 5chw0wvisoc33w87x76ethehymunu238

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author slx
  * @time 18:42
  */
-@SpringBootTest
+//@SpringBootTest
 class RedisLimiterManagerTest {
     @Resource
     private RedisLimiterManager redisLimiterManager;

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author slx
  * @time 17:20
  */
-@SpringBootTest
+//@SpringBootTest
 class AiManagerTest {
 
     @Resource
