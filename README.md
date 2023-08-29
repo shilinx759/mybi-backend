@@ -35,7 +35,7 @@
 
 ### 架构设计
 
-![BI 系统架构.drawio.png](doc/BI 系统架构.drawio.png)
+![BI 系统架构.drawio.png](https://raw.githubusercontent.com/shilinx759/mybi-backend/master/doc/BI%20%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.drawio.png)
 
 ### 业务功能
 
