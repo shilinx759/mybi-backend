@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.manager;
+package com.slx.bibackend.manager;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

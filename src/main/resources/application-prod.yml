@@ -1,31 +1,63 @@
 # 线上配置文件
-# @author <a href="https://github.com/liyupi">程序员鱼皮</a>
-# @from <a href="https://yupi.icu">编程导航知识星球</a>
 server:
-  port: 8101
+  address: 0.0.0.0
+  port: 8123
+  servlet:
+    context-path: /api
+    # cookie 30 over time
+    session:
+      cookie:
+        max-age: 2592000
 spring:
+  application:
+    name: mybi-backend
+#    swagger3
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  # session config
+  session:
+    # todo Uncomment enables distributed session（Redis first）
+    # store-type: redis
+    # 30 天过期
+    timeout: 2592000
   # 数据库配置
   # todo 需替换配置
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/my_db
+    # MySQL 5.7
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/mybi
     username: root
-    password: 123456
+    password: root
   # Redis 配置
-  # todo 需替换配置
   redis:
     database: 1
-    host: localhost
+    host: redis
     port: 6379
     timeout: 5000
-    password: 123456
-  # Elasticsearch 配置
-  # todo 需替换配置
-  elasticsearch:
-    uris: http://localhost:9200
-    username: root
-    password: 123456
+#    password: 123456
+  rabbitmq:
+    port: 5672
+    password: guest
+    username: guest
+    host: rabbitmq
+  # file upload
+  servlet:
+    multipart:
+      max-file-size: 10MB
 mybatis-plus:
   configuration:
+    map-underscore-to-camel-case: false
     # 生产环境关闭日志
     log-impl: ''
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # logic delete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+#AI
+yuapi:
+  client:
+    access-key: inq1qlktc892ikvq7kl67vodc6qvurdi
+    secret-key: 5chw0wvisoc33w87x76ethehymunu238

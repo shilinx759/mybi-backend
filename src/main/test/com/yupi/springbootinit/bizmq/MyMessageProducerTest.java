@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.bizmq;
+package com.slx.bibackend.bizmq;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.manager;
+package com.slx.bibackend.manager;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.mapper;
+package com.slx.bibackend.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,60 +1,56 @@
-# 公共配置文件
-# @author <a href="https://github.com/liyupi">程序员鱼皮</a>
-# @from <a href="https://yupi.icu">编程导航知识星球</a>
 spring:
   application:
     name: mybi-backend
-  # 默认 dev 环境
+  # default dev env
   profiles:
     active: dev
-  # 支持 swagger3
+  #  swagger3
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # session 配置
+  # session config
   session:
-    # todo 取消注释开启分布式 session（须先配置 Redis）
+    # todo Uncomment enables distributed session（Redis first）
     # store-type: redis
     # 30 天过期
     timeout: 2592000
-  # 数据库配置
-  # todo 需替换配置
+  # database config
+  # todo config
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mybi
     username: root
     password: root
-  # Redis 配置
-  # todo 需替换配置，然后取消注释
+  # Redis
+  # todo config
   redis:
     database: 1
     host: 127.0.0.1
     port: 6379
     timeout: 5000
-    password: 123456
-# RabbitMQ配置
+#   password: 123456
+# RabbitMQ
   rabbitmq:
     port: 5672
     password: guest
     username: guest
     host: localhost
-  # Elasticsearch 配置
-  # todo 需替换配置，然后取消注释
+  # Elasticsearch config
+  # todo config
 #  elasticsearch:
 #    uris: http://localhost:9200
 #    username: root
 #    password: 123456
-  # 文件上传
+  # file upload
   servlet:
     multipart:
-      # 大小限制
       max-file-size: 10MB
 server:
   address: 0.0.0.0
   port: 8080
   servlet:
     context-path: /api
-    # cookie 30 天过期
+    # cookie 30 over time
     session:
       cookie:
         max-age: 2592000
@@ -64,15 +60,15 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
-      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
-      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+      logic-delete-field: isDelete # logic delete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
 
 
-# 微信相关
+# about wx
 wx:
-  # 微信公众平台
-  # todo 需替换配置
+  # wx public Account
+  # todo config
   mp:
     token: xxx
     aesKey: xxx
@@ -85,13 +81,13 @@ wx:
         host: 127.0.0.1
         port: 6379
       type: Memory
-  # 微信开放平台
-  # todo 需替换配置
+  # wx open plant
+  # todo config
   open:
     appId: xxx
     appSecret: xxx
-# 对象存储
-# todo 需替换配置
+# object save
+# todo config
 cos:
   client:
     accessKey: xxx
@@ -99,7 +95,7 @@ cos:
     region: xxx
     bucket: xxx
 
-#鱼聪明AI配置
+#AI
 yuapi:
   client:
     access-key: inq1qlktc892ikvq7kl67vodc6qvurdi
