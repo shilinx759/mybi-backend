@@ -3,6 +3,20 @@
 ## 项目简介
 基于 Spring Boot+Rabbit MQ+Ant Design Pro+AIGC 的智能数据分析平台。区别于传统 BI 系统用户只需导入原始数据（如Excel文件）便可得到由AI生成的分析图标及文字结论。
 
+## 系统预览
+
+**同步生成方式**
+
+![同步](https://github.com/shilinx759/diagram/blob/main/bi-%E5%90%8C%E6%AD%A5%E6%B5%8B%E8%AF%95.png?raw=true)
+
+**异步生成方式**
+
+![异步](https://github.com/shilinx759/diagram/blob/main/%E5%BC%82%E6%AD%A5%E6%B5%8B%E8%AF%95.png?raw=true)
+
+**浏览已生成图表列表**
+
+![bi-图表列表](https://github.com/shilinx759/diagram/blob/main/%E5%9B%BE%E8%A1%A8%E5%88%97%E8%A1%A8.png?raw=true)
+
 ### 主流框架 & 特性
 
 ##### 后端：
